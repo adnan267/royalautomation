@@ -1,0 +1,22 @@
+{
+  "name": "royal-automation",
+  "version": "1.0.0",
+  "private": true,
+  "description": "The Royal Automation — industrial automation website, REST API and admin dashboard (MERN).",
+  "type": "module",
+  "workspaces": ["frontend", "backend"],
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,red \"npm run dev -w backend\" \"npm run dev -w frontend\"",
+    "dev:api": "npm run dev -w backend",
+    "dev:web": "npm run dev -w frontend",
+    "build": "npm run build -w frontend",
+    "start": "npm run start -w backend",
+    "seed": "npm run seed -w backend",
+    "create-admin": "npm run create-admin -w backend --",
+    "test:api": "npm run test:api -w backend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

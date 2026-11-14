@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:7
+        ports: ['27017:27017']
+    env:
+      MONGODB_URI: mongodb://127.0.0.1:27017/royal_automation_ci
+      JWT_SECRET: ci-only-secret-ci-only-secret-ci-only-secret-123
+      ADMIN_EMAIL: ci-admin@example.com
+      ADMIN_PASSWORD: CiAdminPassword123
+      API_URL: http://localhost:5000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build website
+        run: npm run build
+      - name: Start API
+        run: |
+          npm run start -w backend > api.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://localhost:5000/api/health && break; sleep 1; done
+      - name: API smoke test
+        run: npm run test:api
+      - name: API log
+        if: failure()
+        run: cat api.log

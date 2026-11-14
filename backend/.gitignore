@@ -1,0 +1,6 @@
+node_modules
+.env
+uploads/media/*
+uploads/attachments/*
+!uploads/media/.gitkeep
+!uploads/attachments/.gitkeep

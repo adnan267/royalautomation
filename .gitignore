@@ -1,0 +1,11 @@
+node_modules/
+.env
+.env.*
+!.env.example
+frontend/dist/
+frontend/public/sitemap.xml
+frontend/public/robots.txt
+backend/uploads/
+.vercel/
+.DS_Store
+*.log
