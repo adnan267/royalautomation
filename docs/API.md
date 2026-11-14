@@ -38,7 +38,7 @@ Base URL: `/api` (for example `http://localhost:5000/api`). Requests and respons
 | Method | Path | Notes |
 |---|---|---|
 | GET | `/settings` | Public website settings: `company`, `contact`, `social`, `home`, `website`, `seo` |
-| PUT 🔒 | `/settings` | Send one or more sections, e.g. `{ "contact": { "phone": "+92 300 1234567" } }`. Objects are deep-merged and arrays are replaced |
+| PUT 🔒 | `/settings` | Send one or more sections, e.g. `{ "contact": { "phone": "+968 9123 4567" } }`. Objects are deep-merged and arrays are replaced |
 
 ## Content collections
 The same endpoints exist for **`services`**, **`industries`**, **`products`** and **`projects`**.

@@ -29,7 +29,9 @@ function OrganizationSchema() {
     image: seo.ogImage,
     ...(contact.phone ? { telephone: contact.phone } : {}),
     ...(contact.email ? { email: contact.email } : {}),
-    ...(contact.address ? { address: { '@type': 'PostalAddress', streetAddress: contact.address } } : {}),
+    ...(contact.address
+      ? { address: { '@type': 'PostalAddress', streetAddress: contact.address, ...(/oman/i.test(contact.address) ? { addressCountry: 'OM' } : {}), ...(/muscat/i.test(contact.address) ? { addressRegion: 'Muscat' } : {}) } }
+      : {}),
     sameAs: Object.values(social).filter(Boolean),
     hasOfferCatalog: {
       '@type': 'OfferCatalog',

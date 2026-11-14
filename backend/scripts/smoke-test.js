@@ -82,8 +82,8 @@ async function run() {
   // Settings
   r = await call('PUT', '/api/settings', { body: { contact: { email: 'not-an-email' } } });
   check('settings validation', r.status === 422 && r.data.errors?.['contact.email']);
-  r = await call('PUT', '/api/settings', { body: { contact: { phone: '+92 300 0000000' }, website: { showTopBar: true } } });
-  check('settings update merges', r.status === 200 && r.data.contact.phone === '+92 300 0000000' && r.data.contact.whatsappMessage);
+  r = await call('PUT', '/api/settings', { body: { contact: { phone: '+968 9000 0000' }, website: { showTopBar: true } } });
+  check('settings update merges', r.status === 200 && r.data.contact.phone === '+968 9000 0000' && r.data.contact.whatsappMessage);
   await call('PUT', '/api/settings', { body: { contact: { phone: '' } } });
 
   // Quote with attachment (public)

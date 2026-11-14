@@ -1,6 +1,6 @@
 # The Royal Automation — Website & Admin Dashboard
 
-**Leaders in Industrial Maintenance**
+**Leader in Industrial Maintenance** · Al Hail, Muscat, Sultanate of Oman
 
 A multi-page MERN (MongoDB, Express, React, Node.js) website for an industrial automation and equipment repair company. It includes an admin dashboard that manages all of the site's content, quote requests and inquiries.
 

@@ -50,7 +50,7 @@ export const IMAGES = {
 export const defaultSettings = {
   company: {
     name: 'The Royal Automation',
-    tagline: 'Leaders in Industrial Maintenance',
+    tagline: 'Leader in Industrial Maintenance',
     logo: '/brand/logo.jpg',
     shortIntro:
       'Industrial automation, repair and maintenance solutions for a smarter, more productive industry.',
@@ -80,10 +80,11 @@ export const defaultSettings = {
     email: '',
     whatsapp: '',
     whatsappMessage: 'Hello The Royal Automation, I would like to discuss an industrial service requirement.',
-    address: '',
+    address: 'Al Hail, Muscat, Sultanate of Oman',
     workingHours: '',
-    mapEmbedUrl: '',
-    mapLink: '',
+    // Shows the Al Hail area. For an exact pin, paste the “Embed a map” URL from Google Maps in the admin.
+    mapEmbedUrl: 'https://www.google.com/maps?q=Al+Hail,+Muscat,+Sultanate+of+Oman&output=embed',
+    mapLink: 'https://www.google.com/maps/search/?api=1&query=Al+Hail,+Muscat,+Sultanate+of+Oman',
   },
   social: { facebook: '', linkedin: '', instagram: '', youtube: '', x: '', tiktok: '' },
   home: {
@@ -168,10 +169,10 @@ export const defaultSettings = {
     defaultTitle: 'The Royal Automation | Industrial Automation, Repair & Maintenance',
     titleTemplate: '%s | The Royal Automation',
     defaultDescription:
-      'Industrial automation services, PLC programming, control panel design, VFD and servo drive repair, industrial electronics repair and preventive maintenance.',
+      'Industrial automation services in Muscat, Oman: PLC programming, control panel design, VFD and servo drive repair, industrial electronics repair and preventive maintenance.',
     ogImage: IMAGES.hero,
     keywords:
-      'industrial automation services, industrial equipment repair, PLC programming services, electrical control panel repair, VFD repair services, servo drive repair, industrial electronics repair, preventive industrial maintenance',
+      'industrial automation services, industrial equipment repair, PLC programming services, electrical control panel repair, VFD repair services, servo drive repair, industrial electronics repair, preventive industrial maintenance, industrial automation Oman, industrial maintenance Muscat',
     pages: {
       home: { title: '', description: '' },
       about: {

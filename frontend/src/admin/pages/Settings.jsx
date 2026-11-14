@@ -127,10 +127,10 @@ export default function SettingsPage() {
           <>
             <Alert tone="info"><Info className="mr-1 inline size-4" /> Only enter real contact details. Empty fields are hidden on the website and visitors are directed to the contact form instead.</Alert>
             <Section title="Phone, email & WhatsApp">
-              {text('contact.phone', 'Phone number (for click-to-call)', { placeholder: '+92 300 1234567', hint: 'Include the country code.' })}
-              {text('contact.phoneDisplay', 'Phone label shown on site (optional)', { placeholder: 'e.g. +92 300 123 4567' })}
+              {text('contact.phone', 'Phone number (for click-to-call)', { placeholder: '+968 9123 4567', hint: 'Include the country code (+968 for Oman).' })}
+              {text('contact.phoneDisplay', 'Phone label shown on site (optional)', { placeholder: 'e.g. +968 9123 4567' })}
               {text('contact.email', 'Email address', { type: 'email' })}
-              {text('contact.whatsapp', 'WhatsApp number', { placeholder: '+92 300 1234567', hint: 'International format. Enables the WhatsApp button.' })}
+              {text('contact.whatsapp', 'WhatsApp number', { placeholder: '+968 9123 4567', hint: 'International format. Enables the WhatsApp button.' })}
               {text('contact.whatsappMessage', 'WhatsApp pre-filled message', { rows: 2, full: true })}
             </Section>
             <Section title="Location">

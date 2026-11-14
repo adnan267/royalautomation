@@ -200,7 +200,10 @@ export const settingsSchema = z
           .string()
           .trim()
           .max(2000)
-          .refine((v) => v === '' || /^https:\/\/(www\.)?google\.[a-z.]+\/maps\/embed/i.test(v), 'Paste the “Embed a map” URL from Google Maps (https://www.google.com/maps/embed?...)'),
+          .refine(
+            (v) => v === '' || /^https:\/\/(www\.)?google\.[a-z.]+\/maps(\/embed|\?.*output=embed)/i.test(v),
+            'Paste the “Embed a map” URL from Google Maps (https://www.google.com/maps/embed?...)',
+          ),
         mapLink: z.union([z.string().trim().url(), z.literal('')]),
       })
       .partial(),

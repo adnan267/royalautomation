@@ -125,7 +125,7 @@ export default function Quote() {
                   <Field label="Full Name" required error={errors.fullName}><input className="input" autoComplete="name" value={values.fullName} onChange={set('fullName')} /></Field>
                   <Field label="Company Name" error={errors.companyName}><input className="input" autoComplete="organization" value={values.companyName} onChange={set('companyName')} /></Field>
                   <Field label="Email Address" required error={errors.email}><input type="email" className="input" autoComplete="email" value={values.email} onChange={set('email')} /></Field>
-                  <Field label="Phone Number" required error={errors.phone} hint="Include country code for WhatsApp, e.g. +92…"><input type="tel" className="input" autoComplete="tel" value={values.phone} onChange={set('phone')} /></Field>
+                  <Field label="Phone Number" required error={errors.phone} hint="Include the country code for WhatsApp, e.g. +968…"><input type="tel" className="input" autoComplete="tel" value={values.phone} onChange={set('phone')} /></Field>
                 </fieldset>
 
                 <Field label="Industry" error={errors.industry}>
