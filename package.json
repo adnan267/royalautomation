@@ -2,10 +2,15 @@
   "name": "royal-automation",
   "version": "1.0.0",
   "private": true,
-  "description": "The Royal Automation — industrial automation website, REST API and admin dashboard (MERN).",
+  "description": "The Royal Automation \u2014 industrial automation website, REST API and admin dashboard (MERN).",
   "type": "module",
-  "workspaces": ["frontend", "backend"],
-  "engines": { "node": ">=20" },
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "concurrently -n api,web -c blue,red \"npm run dev -w backend\" \"npm run dev -w frontend\"",
     "dev:api": "npm run dev -w backend",
@@ -18,5 +23,10 @@
   },
   "devDependencies": {
     "concurrently": "^9.1.0"
+  },
+  "overrides": {
+    "@vercel/cli-config": {
+      "zod": "4.6.7"
+    }
   }
 }
