@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router';
-import { Briefcase, Building2, ExternalLink, FileText, Image, Inbox, KeyRound, LayoutDashboard, LogOut, Menu, Package, Settings, Wrench, X } from 'lucide-react';
+import { Award, Briefcase, Building2, ExternalLink, FileText, Image, Images, Inbox, KeyRound, LayoutDashboard, LogOut, Menu, Package, Settings, Wrench, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
@@ -14,7 +14,9 @@ const NAV = [
   { group: 'Content', items: [
     { to: '/admin/services', label: 'Services', icon: Wrench },
     { to: '/admin/industries', label: 'Industries', icon: Building2 },
-    { to: '/admin/products', label: 'Products', icon: Package },
+    { to: '/admin/products', label: 'Store Products', icon: Package },
+    { to: '/admin/gallery', label: 'Gallery', icon: Images },
+    { to: '/admin/brands', label: 'Brands', icon: Award },
     { to: '/admin/projects', label: 'Projects', icon: Briefcase },
     { to: '/admin/media', label: 'Media Library', icon: Image },
   ] },

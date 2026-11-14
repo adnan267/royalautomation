@@ -7,3 +7,5 @@ export { default as Project } from './Project.js';
 export { default as Quote } from './Quote.js';
 export { default as Inquiry } from './Inquiry.js';
 export { default as Media } from './Media.js';
+export { default as Brand } from './Brand.js';
+export { default as GalleryItem } from './GalleryItem.js';

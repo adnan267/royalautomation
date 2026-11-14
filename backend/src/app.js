@@ -27,11 +27,12 @@ export function createApp() {
             directives: {
               defaultSrc: ["'self'"],
               imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
+              mediaSrc: ["'self'", 'blob:', 'https://*.public.blob.vercel-storage.com'],
               scriptSrc: ["'self'"],
               styleSrc: ["'self'", "'unsafe-inline'"],
               fontSrc: ["'self'", 'data:'],
-              frameSrc: ['https://www.google.com', 'https://maps.google.com'],
-              connectSrc: ["'self'"],
+              frameSrc: ['https://www.google.com', 'https://maps.google.com', 'https://www.youtube-nocookie.com', 'https://www.youtube.com', 'https://player.vimeo.com'],
+              connectSrc: ["'self'", 'https://vercel.com', 'https://*.blob.vercel-storage.com'],
               objectSrc: ["'none'"],
             },
           }

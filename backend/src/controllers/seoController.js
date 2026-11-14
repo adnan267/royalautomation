@@ -12,7 +12,8 @@ const STATIC_PATHS = [
   ['/about', '0.8', 'monthly'],
   ['/services', '0.9', 'monthly'],
   ['/industries', '0.8', 'monthly'],
-  ['/products', '0.8', 'weekly'],
+  ['/store', '0.8', 'weekly'],
+  ['/gallery', '0.6', 'weekly'],
   ['/projects', '0.7', 'weekly'],
   ['/contact', '0.8', 'yearly'],
   ['/request-a-quote', '0.9', 'yearly'],
@@ -32,7 +33,7 @@ export async function sitemap(req, res) {
   const urls = [
     ...STATIC_PATHS.map(([p, priority, changefreq]) => ({ loc: base + p, priority, changefreq })),
     ...services.map((s) => ({ loc: `${base}/services/${s.slug}`, lastmod: s.updatedAt, priority: '0.8', changefreq: 'monthly' })),
-    ...products.map((s) => ({ loc: `${base}/products/${s.slug}`, lastmod: s.updatedAt, priority: '0.6', changefreq: 'monthly' })),
+    ...products.map((s) => ({ loc: `${base}/store/${s.slug}`, lastmod: s.updatedAt, priority: '0.6', changefreq: 'monthly' })),
     ...projects.map((s) => ({ loc: `${base}/projects/${s.slug}`, lastmod: s.updatedAt, priority: '0.6', changefreq: 'monthly' })),
   ];
   const body = urls

@@ -28,7 +28,7 @@ const TABS = [
 ];
 
 const SEO_PAGES = [
-  ['home', 'Home'], ['about', 'About Us'], ['services', 'Services'], ['industries', 'Industries'], ['products', 'Products'],
+  ['home', 'Home'], ['about', 'About Us'], ['services', 'Services'], ['industries', 'Industries'], ['products', 'Store'], ['gallery', 'Gallery'],
   ['projects', 'Projects'], ['contact', 'Contact'], ['quote', 'Request a Quote'], ['privacy', 'Privacy Policy'], ['terms', 'Terms & Conditions'],
 ];
 
@@ -195,6 +195,16 @@ export default function SettingsPage() {
               {text('home.cta.buttonHref', 'Button link')}
               <div className="sm:col-span-2"><ImageField label="Background image" value={val('home.cta.image')} onChange={set('home.cta.image')} /></div>
             </Section>
+            <Section title="Gallery & brands sections">
+              <div className="sm:col-span-2 space-y-3">
+                <Toggle checked={val('home.gallerySection.show') !== false} onChange={set('home.gallerySection.show')} label="Show gallery on homepage" description="Appears once the gallery has items." />
+                <Toggle checked={val('home.brandsSection.show') !== false} onChange={set('home.brandsSection.show')} label="Show brands slider" description="On the homepage and the store page. Manage brands in Admin → Brands." />
+              </div>
+              {text('home.gallerySection.heading', 'Gallery heading')}
+              {text('home.gallerySection.subheading', 'Gallery subheading')}
+              {text('home.brandsSection.heading', 'Brands heading')}
+              {text('home.brandsSection.subheading', 'Brands subheading')}
+            </Section>
             <Section title="Company statistics (optional)" description="Animated counters appear on the homepage only when figures are added. Only enter real, verifiable numbers.">
               <AField className="sm:col-span-2"><ObjectListEditor value={val('home.stats') || []} onChange={set('home.stats')} fields={[{ name: 'label', label: 'Label (e.g. Projects completed)' }, { name: 'value', label: 'Number', type: 'number' }, { name: 'suffix', label: 'Suffix (e.g. +)' }]} newItem={{ label: '', value: 0, suffix: '' }} max={6} addLabel="Add statistic" /></AField>
             </Section>
@@ -226,6 +236,12 @@ export default function SettingsPage() {
         )}
 
         {tab === 'website' && (
+          <>
+          <Section title="Store" description="Customers order through WhatsApp. Set your WhatsApp number in the Contact tab.">
+            {text('website.currency', 'Currency code', { placeholder: 'OMR', hint: 'ISO code, e.g. OMR, AED, USD.' })}
+            <div className="flex items-end pb-2"><Toggle checked={val('website.showPrices') !== false} onChange={set('website.showPrices')} label="Show prices in the store" description="Off = every product shows “Price on request”." /></div>
+            {text('website.whatsappOrderMessage', 'WhatsApp order message', { rows: 5, full: true, hint: 'Placeholders: {product}, {qty}, {price}, {link}' })}
+          </Section>
           <Section title="Website options">
             <div className="sm:col-span-2 space-y-4">
               <Toggle checked={val('website.showTopBar') !== false} onChange={set('website.showTopBar')} label="Show top information bar" />
@@ -235,6 +251,7 @@ export default function SettingsPage() {
             {text('website.contactSuccessMessage', 'Contact form success message', { rows: 3, full: true })}
             {text('website.footerNote', 'Footer note (optional)', { full: true, placeholder: 'e.g. company registration number' })}
           </Section>
+          </>
         )}
       </div>
       <div className="mt-6 flex justify-end">

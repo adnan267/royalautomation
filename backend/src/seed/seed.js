@@ -7,8 +7,8 @@
  * Admin credentials are read from ADMIN_NAME / ADMIN_EMAIL / ADMIN_PASSWORD in .env.
  */
 import { connectDB, disconnectDB } from '../config/db.js';
-import { Settings, Service, Industry, Product, User } from '../models/index.js';
-import { defaultSettings, services, industries, products } from '../../../shared/content.js';
+import { Settings, Service, Industry, Product, User, Brand } from '../models/index.js';
+import { defaultSettings, services, industries, products, brands } from '../../../shared/content.js';
 
 const reset = process.argv.includes('--reset');
 
@@ -30,8 +30,8 @@ async function run() {
   await connectDB();
 
   if (reset) {
-    await Promise.all([Service.deleteMany({}), Industry.deleteMany({}), Product.deleteMany({}), Settings.deleteMany({})]);
-    console.log('[seed] reset: cleared services, industries, products and settings');
+    await Promise.all([Service.deleteMany({}), Industry.deleteMany({}), Product.deleteMany({}), Brand.deleteMany({}), Settings.deleteMany({})]);
+    console.log('[seed] reset: cleared services, industries, products, brands and settings');
   }
 
   if (!(await Settings.exists({ key: 'site' }))) {
@@ -42,6 +42,7 @@ async function run() {
   await upsertMany(Service, services, 'services');
   await upsertMany(Industry, industries, 'industries');
   await upsertMany(Product, products, 'products');
+  await upsertMany(Brand, brands, 'brands');
 
   const { ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_NAME } = process.env;
   if (ADMIN_EMAIL && ADMIN_PASSWORD) {

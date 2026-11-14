@@ -58,14 +58,18 @@ const RESOURCES = {
     ],
   },
   products: {
-    title: 'Products', singular: 'Product', titleField: 'name', path: '/products/',
-    description: 'Products and spare parts. No prices are shown — visitors request a quote.',
-    blank: { name: '', category: productCategories[0], brand: '', partNumber: '', image: '', gallery: [], imageAlt: '', excerpt: '', description: '', features: [], applications: [], specifications: [], availability: 'Enquire for availability', featured: false, published: true, order: 0, seoTitle: '', seoDescription: '' },
+    title: 'Store Products', singular: 'Product', titleField: 'name', path: '/store/',
+    description: 'Products shown in the online store. Set a price to show it (leave empty for “Price on request”). Customers order on WhatsApp.',
+    blank: { name: '', category: productCategories[0], brand: '', partNumber: '', price: null, oldPrice: null, unit: '', stockStatus: 'in_stock', image: '', gallery: [], imageAlt: '', excerpt: '', description: '', features: [], applications: [], specifications: [], availability: 'Enquire for availability', featured: false, published: true, order: 0, seoTitle: '', seoDescription: '' },
     fields: [
       { name: 'name', label: 'Product name', type: 'text', required: true },
       { name: 'slug', label: 'URL slug', type: 'slug' },
       { name: 'category', label: 'Category', type: 'select', options: productCategories, allowCustom: true },
-      { name: 'availability', label: 'Availability label', type: 'text', hint: 'e.g. “In stock”, “Enquire for availability”' },
+      { name: 'stockStatus', label: 'Stock status', type: 'choice', options: [['in_stock', 'In stock'], ['limited', 'Limited stock'], ['on_order', 'Available on order'], ['out_of_stock', 'Out of stock'], ['', 'Not shown (use availability label)']] },
+      { name: 'price', label: 'Price', type: 'money', hint: 'In the store currency (Settings → Website). Leave empty for “Price on request”.' },
+      { name: 'oldPrice', label: 'Old price (optional)', type: 'money', hint: 'Shown crossed out, for discounts.' },
+      { name: 'unit', label: 'Price unit (optional)', type: 'text', hint: 'e.g. piece, set, metre' },
+      { name: 'availability', label: 'Availability label', type: 'text', hint: 'Shown when stock status is “Not shown”.' },
       { name: 'brand', label: 'Brand (optional)', type: 'text' },
       { name: 'partNumber', label: 'Part / model number (optional)', type: 'text' },
       { name: 'image', label: 'Main image', type: 'image', full: true },
@@ -77,8 +81,21 @@ const RESOURCES = {
       { name: 'applications', label: 'Applications', type: 'list', full: true },
       { name: 'specifications', label: 'Specifications', type: 'specs', full: true },
       { name: 'order', label: 'Display order', type: 'number' },
+      { name: 'featured', label: 'Featured (shown first)', type: 'toggle' },
       { name: 'published', label: 'Published', type: 'toggle' },
       ...SEO_FIELDS,
+    ],
+  },
+  brands: {
+    title: 'Brands', singular: 'Brand', titleField: 'name', imageField: 'logo', path: null,
+    description: 'Brands shown in the sliding strip on the homepage and store. Upload each brand’s official logo (PNG/SVG with transparent background works best) and remove brands you don’t support.',
+    blank: { name: '', logo: '', website: '', published: true, order: 0 },
+    fields: [
+      { name: 'name', label: 'Brand name', type: 'text', required: true },
+      { name: 'order', label: 'Display order', type: 'number' },
+      { name: 'logo', label: 'Logo', type: 'image', full: true, hint: 'Without a logo, the brand name is shown as text.' },
+      { name: 'website', label: 'Website link (optional)', type: 'text', full: true },
+      { name: 'published', label: 'Published', type: 'toggle' },
     ],
   },
   projects: {
@@ -138,6 +155,8 @@ function Editor({ cfg, value, setValue, errors }) {
       case 'gallery': return <GalleryEditor value={v || []} onChange={set(f.name)} />;
       case 'icon': return <IconSelect value={v} onChange={set(f.name)} />;
       case 'number': return <input type="number" min="0" className="input" value={v ?? 0} onChange={(e) => set(f.name)(Number(e.target.value))} />;
+      case 'money': return <input type="number" min="0" step="0.001" inputMode="decimal" className="input" value={v ?? ''} placeholder="Price on request" onChange={(e) => set(f.name)(e.target.value === '' ? null : Number(e.target.value))} />;
+      case 'choice': return <select className="input" value={v ?? ''} onChange={(e) => set(f.name)(e.target.value)}>{f.options.map(([val, lab]) => <option key={val} value={val}>{lab}</option>)}</select>;
       case 'toggle': return <Toggle checked={!!v} onChange={set(f.name)} label={f.label} />;
       case 'slug': return <input className="input font-mono text-sm" value={v || ''} onChange={(e) => set(f.name)(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-'))} placeholder="auto-generated from title" />;
       case 'specs': return <ObjectListEditor value={v || []} onChange={set(f.name)} fields={[{ name: 'label', label: 'Label' }, { name: 'value', label: 'Value' }]} addLabel="Add specification" max={40} />;
@@ -277,7 +296,7 @@ export default function ResourceManager({ kind }) {
           ) : filtered.map((it) => (
             <li key={it._id} className="flex items-center gap-3 px-4 py-3">
               <button type="button" onClick={() => open(it)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
-                <SmartImage src={it.image} alt="" icon={it.icon || 'Package'} className="h-14 w-16 shrink-0 rounded-md" />
+                <SmartImage src={it[cfg.imageField || 'image']} alt="" icon={it.icon || 'Package'} className="h-14 w-16 shrink-0 rounded-md" imgClassName={cfg.imageField === 'logo' ? 'object-contain bg-white p-1' : undefined} />
                 <span className="min-w-0">
                   <span className="block truncate font-semibold text-navy">{it[cfg.titleField]}</span>
                   <span className="mt-1 flex flex-wrap gap-1.5">
@@ -302,12 +321,12 @@ export default function ResourceManager({ kind }) {
                 <tr key={it._id} className="hover:bg-surface/60">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <SmartImage src={it.image} alt="" icon={it.icon || 'Package'} className="h-12 w-16 shrink-0 rounded-md" />
+                      <SmartImage src={it[cfg.imageField || 'image']} alt="" icon={it.icon || 'Package'} className="h-12 w-16 shrink-0 rounded-md" imgClassName={cfg.imageField === 'logo' ? 'object-contain bg-white p-1' : undefined} />
                       <div className="min-w-0">
                         <button type="button" onClick={() => open(it)} className="flex items-center gap-1.5 py-1 text-left font-semibold text-navy hover:text-brand">
                           {it.icon && <Icon name={it.icon} className="size-4 text-brand" />}{it[cfg.titleField]}
                         </button>
-                        <p className="truncate text-xs text-muted">{it.category || it.industry || `/${it.slug}`}</p>
+                        <p className="truncate text-xs text-muted">{[it.category || it.industry || (cfg.path ? `/${it.slug}` : ''), typeof it.price === 'number' ? `${it.price.toFixed(3)}` : ''].filter(Boolean).join(' · ')}</p>
                       </div>
                     </div>
                   </td>
@@ -327,7 +346,7 @@ export default function ResourceManager({ kind }) {
                   <td className="whitespace-nowrap px-4 py-3 text-muted">{formatDate(it.updatedAt)}</td>
                   <td className="px-4 py-3">
                     <div className="flex justify-end gap-1">
-                      <a href={`${cfg.path}${it.slug}`} target="_blank" rel="noopener noreferrer" className="rounded-md p-2 text-muted hover:bg-white hover:text-brand" title="View on website"><ExternalLink className="size-4" /></a>
+                      {cfg.path && <a href={`${cfg.path}${it.slug}`} target="_blank" rel="noopener noreferrer" className="rounded-md p-2 text-muted hover:bg-white hover:text-brand" title="View on website"><ExternalLink className="size-4" /></a>}
                       <button type="button" onClick={() => open(it)} className="rounded-md p-2 text-muted hover:bg-white hover:text-brand" title="Edit"><Pencil className="size-4" /></button>
                       <button type="button" onClick={() => remove(it)} className="rounded-md p-2 text-muted hover:bg-accent-50 hover:text-accent" title="Delete"><Trash2 className="size-4" /></button>
                     </div>

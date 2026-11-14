@@ -51,6 +51,7 @@ You need three free accounts: **GitHub**, **Vercel** and **MongoDB Atlas**.
    | `ADMIN_PASSWORD` | 10+ characters | ✅ first deploy |
    | `ADMIN_NAME` | your name | optional |
    | `PUBLIC_SITE_URL` | `https://www.yourdomain.com` (once you have a domain) | optional |
+| `BLOB_READ_WRITE_TOKEN` | added automatically when you connect Vercel Blob (Step 4) | for video uploads |
 
 4. Click **Deploy**. On the first request the API automatically:
    - loads the default website content (services, industries, products, settings);
@@ -60,7 +61,17 @@ You need three free accounts: **GitHub**, **Vercel** and **MongoDB Atlas**.
 
 Every later `git push` to `main` redeploys automatically. Pull requests get their own preview URLs.
 
-## Step 4 — Custom domain
+## Step 4 (optional) — Turn on video file uploads
+
+Gallery videos can always be added as **YouTube/Vimeo links**. To upload video files directly:
+
+1. Vercel → your project → **Storage** → **Create Database** → **Blob** → create it and **connect it to this project** (all environments).
+2. Vercel adds the `BLOB_READ_WRITE_TOKEN` environment variable automatically. **Redeploy** once.
+3. In **Admin → Gallery → Add Video → Upload video file**, choose an MP4/WebM/MOV file (up to 200 MB; change with `MAX_VIDEO_MB`). The browser uploads it **directly to Vercel Blob** with a progress bar, so the 4.5 MB function limit doesn't apply. A thumbnail is taken from the video automatically.
+
+Vercel Blob's free allowance is 1 GB of storage. Use MP4 (H.264) at 720p or 1080p to keep files small. Deleting a video in the admin also deletes the file from Blob.
+
+## Step 5 — Custom domain
 
 Vercel → Project → **Settings → Domains** → add `yourdomain.com` and `www.yourdomain.com`, then create the DNS records Vercel shows at your domain registrar. HTTPS is issued automatically.
 
@@ -89,6 +100,8 @@ Then:
 | `JWT_SECRET must be at least 32 characters` in logs | Use a longer secret |
 | Changed environment variables but nothing changed | Vercel → Deployments → ⋯ → **Redeploy** (env changes apply to new deployments) |
 | Upload fails with 413 | The file is over the limit. Compress it or send it by email/WhatsApp |
+| "Video uploads are not set up yet" | Connect Vercel Blob (Step 4) and redeploy, or use a YouTube link |
+| Store "Order on WhatsApp" button missing | Add the WhatsApp number in **Admin → Settings → Contact** |
 
 ## Running locally
 

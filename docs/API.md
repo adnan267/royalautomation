@@ -57,6 +57,18 @@ Main fields:
 - **Product:** `name, slug, category, brand, partNumber, image, gallery[], imageAlt, excerpt, description, features[], applications[], specifications[{label,value}], availability, featured, published, order, seoTitle, seoDescription`
 - **Project:** `title, slug, client, industry, location, completedOn, image, gallery[], summary, challenge, solution, outcome, services[], featured, published, order`
 
+Extra collections with the same endpoints:
+- **Brand:** `name, slug, logo, website, published, order`
+- **Gallery item** (`/gallery`): `type ('image' | 'video'), title, caption, album, image (photo or thumbnail), videoUrl (YouTube/Vimeo/uploaded file), featured, published, order`. Filters: `type=`, `album=`. Images need `image`; videos need `videoUrl`.
+
+Product store fields: `price`, `oldPrice` (numbers or `null` for "Price on request"), `unit`, `stockStatus` (`in_stock`, `limited`, `on_order`, `out_of_stock` or `''`).
+
+| Method | Path | Notes |
+|---|---|---|
+| POST 🔒 | `/gallery/bulk` | `{ items: [ ...gallery items ] }`, up to 50 at a time |
+| GET 🔒 | `/uploads/video-config` | `{ enabled, maxMb }`. `enabled` is true when `BLOB_READ_WRITE_TOKEN` is set |
+| POST 🔒 | `/uploads/video-token` | Used by `@vercel/blob/client` `upload()` to get a short-lived token for a direct browser → Vercel Blob upload (paths must start with `gallery/`; MP4/WebM/MOV; max `MAX_VIDEO_MB`). Returns 501 if Blob isn't connected |
+
 ## Quote requests
 | Method | Path | Notes |
 |---|---|---|

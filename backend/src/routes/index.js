@@ -6,7 +6,9 @@ import { attachmentUpload, mediaUpload, handleUploadErrors } from '../middleware
 import * as S from '../validators/schemas.js';
 import { QUOTE_STATUSES } from '../models/Quote.js';
 import { INQUIRY_STATUSES } from '../models/Inquiry.js';
-import { Service, Industry, Product, Project } from '../models/index.js';
+import { Service, Industry, Product, Project, Brand, GalleryItem } from '../models/index.js';
+import { videoUploadToken, deleteBlobIfOwned, videoUploadsEnabled, MAX_VIDEO_MB } from '../controllers/videoUploadController.js';
+import { randomBytes } from 'node:crypto';
 import * as auth from '../controllers/authController.js';
 import * as settings from '../controllers/settingsController.js';
 import { crudFactory } from '../controllers/crudFactory.js';
@@ -34,15 +36,28 @@ const collections = [
   ['industries', Industry, S.industrySchema, { label: 'Industry', searchFields: ['title', 'excerpt'] }],
   ['products', Product, S.productSchema, { label: 'Product', titleField: 'name', searchFields: ['name', 'category', 'brand', 'partNumber', 'excerpt'], filters: ['category'] }],
   ['projects', Project, S.projectSchema, { label: 'Project', searchFields: ['title', 'client', 'industry', 'summary'], filters: ['industry'] }],
+  ['brands', Brand, S.brandSchema, { label: 'Brand', titleField: 'name', searchFields: ['name'] }],
+  ['gallery', GalleryItem, S.galleryItemSchema, {
+    label: 'Gallery item',
+    searchFields: ['title', 'caption', 'album'],
+    filters: ['type', 'album'],
+    slugFrom: (d) => (d.title ? `${d.title}-${randomBytes(2).toString('hex')}` : `${d.type}-${randomBytes(4).toString('hex')}`),
+    onDelete: (item) => deleteBlobIfOwned(item.videoUrl),
+  }],
 ];
 for (const [path, Model, schema, opts] of collections) {
   const c = crudFactory(Model, opts);
+  if (path === 'gallery') router.post('/gallery/bulk', requireAuth, validate(S.galleryBulkSchema), c.createMany);
   router.get(`/${path}`, optionalAuth, c.list);
   router.get(`/${path}/:idOrSlug`, optionalAuth, c.getOne);
   router.post(`/${path}`, requireAuth, validate(schema), c.create);
   router.put(`/${path}/:id`, requireAuth, validate(schema), c.update);
   router.delete(`/${path}/:id`, requireAuth, c.remove);
 }
+
+/* Direct video uploads to Vercel Blob (admin) */
+router.get('/uploads/video-config', requireAuth, (_req, res) => res.json({ enabled: videoUploadsEnabled(), maxMb: MAX_VIDEO_MB }));
+router.post('/uploads/video-token', requireAuth, videoUploadToken);
 
 /* Quote requests */
 router.post('/quotes', formLimiter, handleUploadErrors(attachmentUpload.array('attachments', 5)), subs.createQuote);

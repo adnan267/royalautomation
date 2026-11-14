@@ -26,11 +26,12 @@ function useMenus() {
       footer: { label: 'All industries', to: '/industries' },
     },
     {
-      label: 'Products',
-      to: '/products',
-      items: productCategories.map((c) => ({ label: c, to: `/products?category=${encodeURIComponent(c)}`, icon: 'Package' })),
-      footer: { label: 'Browse all products', to: '/products' },
+      label: 'Store',
+      to: '/store',
+      items: productCategories.map((c) => ({ label: c, to: `/store?category=${encodeURIComponent(c)}`, icon: 'Package' })),
+      footer: { label: 'Browse the full store', to: '/store' },
     },
+    { label: 'Gallery', to: '/gallery' },
     { label: 'Contact', to: '/contact' },
   ];
 }

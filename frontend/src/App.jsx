@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Route, Routes } from 'react-router';
+import { Navigate, Route, Routes, useLocation, useParams } from 'react-router';
 import { MotionConfig } from 'framer-motion';
 import { SiteProvider } from './context/SiteContext';
 import { AuthProvider } from './context/AuthContext';
@@ -20,6 +20,14 @@ const Quote = lazy(() => import('./pages/Quote'));
 const Privacy = lazy(() => import('./pages/Legal').then((m) => ({ default: m.Privacy })));
 const Terms = lazy(() => import('./pages/Legal').then((m) => ({ default: m.Terms })));
 const NotFound = lazy(() => import('./pages/NotFound'));
+const Gallery = lazy(() => import('./pages/Gallery'));
+
+/* Old /products URLs → /store (keeps links and search results working). */
+function ProductsRedirect() {
+  const { slug } = useParams();
+  const { search } = useLocation();
+  return <Navigate to={`/store${slug ? `/${slug}` : ''}${search}`} replace />;
+}
 const AdminApp = lazy(() => import('./admin/AdminApp'));
 
 export default function App() {
@@ -43,8 +51,11 @@ export default function App() {
             <Route path="services" element={<Services />} />
             <Route path="services/:slug" element={<ServiceDetail />} />
             <Route path="industries" element={<Industries />} />
-            <Route path="products" element={<Products />} />
-            <Route path="products/:slug" element={<ProductDetail />} />
+            <Route path="store" element={<Products />} />
+            <Route path="store/:slug" element={<ProductDetail />} />
+            <Route path="products" element={<ProductsRedirect />} />
+            <Route path="products/:slug" element={<ProductsRedirect />} />
+            <Route path="gallery" element={<Gallery />} />
             <Route path="projects" element={<Projects />} />
             <Route path="projects/:slug" element={<ProjectDetail />} />
             <Route path="contact" element={<Contact />} />

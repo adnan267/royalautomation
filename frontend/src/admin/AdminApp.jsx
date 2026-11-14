@@ -12,6 +12,7 @@ const ResourceManager = lazy(() => import('./pages/ResourceManager'));
 const Media = lazy(() => import('./pages/Media'));
 const SettingsPage = lazy(() => import('./pages/Settings'));
 const Account = lazy(() => import('./pages/Account'));
+const GalleryAdmin = lazy(() => import('./pages/GalleryAdmin'));
 
 function Protected({ children }) {
   const { user, checking } = useAuth();
@@ -36,6 +37,8 @@ export default function AdminApp() {
               <Route path="industries" element={<ResourceManager kind="industries" />} />
               <Route path="products" element={<ResourceManager kind="products" />} />
               <Route path="projects" element={<ResourceManager kind="projects" />} />
+              <Route path="brands" element={<ResourceManager kind="brands" />} />
+              <Route path="gallery" element={<GalleryAdmin />} />
               <Route path="media" element={<Media />} />
               <Route path="settings" element={<SettingsPage />} />
               <Route path="account" element={<Account />} />

@@ -48,7 +48,7 @@ export default function Footer() {
         <div className="lg:col-span-2">
           <h2 className={heading}>Quick Links</h2>
           <ul className="mt-5 space-y-3">
-            {[['Home', '/'], ['About Us', '/about'], ['Industries', '/industries'], ['Products', '/products'], ['Projects', '/projects'], ['Contact', '/contact'], ['Request a Quote', '/request-a-quote']].map(([l, to]) => (
+            {[['Home', '/'], ['About Us', '/about'], ['Industries', '/industries'], ['Store', '/store'], ['Gallery', '/gallery'], ['Projects', '/projects'], ['Contact', '/contact'], ['Request a Quote', '/request-a-quote']].map(([l, to]) => (
               <li key={to}><Link to={to} className={link}>{l}</Link></li>
             ))}
           </ul>

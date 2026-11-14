@@ -99,6 +99,10 @@ export const productSchema = z.object({
     .optional()
     .default([]),
   availability: optStr(80),
+  price: z.union([z.coerce.number().min(0).max(1e9), z.null()]).optional(),
+  oldPrice: z.union([z.coerce.number().min(0).max(1e9), z.null()]).optional(),
+  unit: optStr(30),
+  stockStatus: z.enum(['', 'in_stock', 'limited', 'on_order', 'out_of_stock']).optional().default(''),
   featured: z.boolean().optional().default(false),
   seoTitle: optStr(120),
   seoDescription: optStr(320),
@@ -120,6 +124,37 @@ export const projectSchema = z.object({
   services: strList(15, 160),
   featured: z.boolean().optional().default(false),
 });
+
+const httpsUrl = z
+  .string()
+  .trim()
+  .max(1000)
+  .refine((v) => v === '' || /^https?:\/\//i.test(v), 'Enter a full URL starting with https://');
+
+export const brandSchema = z.object({
+  ...base,
+  name: str(80).min(1, 'Brand name is required'),
+  logo: imageRef,
+  website: httpsUrl.optional().default(''),
+});
+
+export const galleryItemSchema = z
+  .object({
+    ...base,
+    type: z.enum(['image', 'video']),
+    title: optStr(160),
+    caption: optStr(600),
+    album: optStr(80),
+    image: imageRef,
+    videoUrl: httpsUrl.optional().default(''),
+    featured: z.boolean().optional().default(false),
+  })
+  .refine((d) => (d.type === 'image' ? Boolean(d.image) : Boolean(d.videoUrl)), {
+    message: 'Add a photo (for images) or a video link / file (for videos).',
+    path: ['image'],
+  });
+
+export const galleryBulkSchema = z.object({ items: z.array(galleryItemSchema).min(1).max(50) });
 
 /* ------------------------- Public forms --------------------------- */
 const honeypot = z.string().max(0, 'Invalid submission').optional().default('');
@@ -236,6 +271,8 @@ export const settingsSchema = z
         stats: z
           .array(z.object({ label: str(80), value: z.coerce.number().min(0).max(1e9), suffix: sStr(10) }))
           .max(6),
+        brandsSection: z.object({ heading: sStr(120), subheading: sStr(300), show: z.boolean() }).partial(),
+        gallerySection: z.object({ heading: sStr(120), subheading: sStr(300), show: z.boolean() }).partial(),
       })
       .partial(),
     website: z
@@ -245,6 +282,9 @@ export const settingsSchema = z
         quoteSuccessMessage: sStr(500),
         contactSuccessMessage: sStr(500),
         footerNote: sStr(300),
+        currency: sStr(10),
+        showPrices: z.boolean(),
+        whatsappOrderMessage: sStr(500),
       })
       .partial(),
     seo: z

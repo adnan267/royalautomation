@@ -16,6 +16,11 @@ const productSchema = new mongoose.Schema(
     applications: { type: [String], default: [] },
     specifications: { type: [{ label: String, value: String }], default: [] },
     availability: { type: String, default: 'Enquire for availability', maxlength: 80 },
+    // Store fields (prices in the store currency, e.g. OMR). No price = "Price on request".
+    price: { type: Number, min: 0 },
+    oldPrice: { type: Number, min: 0 },
+    unit: { type: String, default: '', maxlength: 30 },
+    stockStatus: { type: String, enum: ['', 'in_stock', 'limited', 'on_order', 'out_of_stock'], default: '' },
     featured: { type: Boolean, default: false },
     published: { type: Boolean, default: true },
     order: { type: Number, default: 0 },

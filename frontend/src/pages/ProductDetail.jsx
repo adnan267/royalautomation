@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
-import { ArrowRight, CheckCircle2, MessageCircle, Package } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Minus, MessageCircle, Plus, FileText } from 'lucide-react';
 import Seo from '@/components/Seo';
 import JsonLd from '@/components/JsonLd';
 import { useSiteUrl } from '@/components/Seo';
@@ -12,7 +12,8 @@ import { PageLoader } from '@/components/ui/Feedback';
 import { ProductCard } from '@/components/sections/Cards';
 import { useFetch } from '@/lib/useFetch';
 import { useSite } from '@/context/SiteContext';
-import { cn, waHref } from '@/lib/utils';
+import { cn } from '@/lib/utils';
+import { STOCK, formatPrice, hasPrice, whatsappOrderLink } from '@/lib/store';
 import { assetUrl } from '@/lib/api';
 import { products as fallbackProducts } from '@shared/content.js';
 import NotFound from './NotFound';
@@ -25,14 +26,19 @@ export default function ProductDetail() {
   const { data: product, loading, error } = useFetch(`/products/${slug}`, { fallback: local, deps: [slug] });
   const { data: all } = useFetch('/products', { fallback: { items: fallbackProducts } });
   const [active, setActive] = useState(0);
+  const [qty, setQty] = useState(1);
 
   if (!product && loading) return <PageLoader />;
   if (!product || (error?.status === 404 && !local)) return <NotFound />;
 
   const images = [product.image, ...(product.gallery || [])].filter(Boolean);
   const related = (all?.items || []).filter((p) => p.slug !== product.slug && p.category === product.category).slice(0, 4);
-  const quoteLink = `/request-a-quote?product=${encodeURIComponent(product.name)}`;
-  const wa = waHref(settings.contact?.whatsapp, `Hello, I'd like to enquire about: ${product.name}${product.partNumber ? ` (${product.partNumber})` : ''}`);
+  const quoteLink = `/request-a-quote?product=${encodeURIComponent(`${product.name}${qty > 1 ? ` × ${qty}` : ''}`)}`;
+  const wa = whatsappOrderLink(product, qty, settings, `${base}/store/${product.slug}`);
+  const currency = settings.website?.currency || 'OMR';
+  const showPrice = settings.website?.showPrices !== false && hasPrice(product);
+  const stock = STOCK[product.stockStatus];
+  const unavailable = product.stockStatus === 'out_of_stock';
 
   return (
     <>
@@ -47,10 +53,11 @@ export default function ProductDetail() {
           ...(product.brand ? { brand: { '@type': 'Brand', name: product.brand } } : {}),
           ...(product.partNumber ? { mpn: product.partNumber } : {}),
           ...(images[0] ? { image: images.map((i) => assetUrl(i)) } : {}),
+          ...(showPrice ? { offers: { '@type': 'Offer', price: product.price.toFixed(3), priceCurrency: currency, availability: `https://schema.org/${unavailable ? 'OutOfStock' : product.stockStatus === 'on_order' ? 'PreOrder' : 'InStock'}`, url: `${base}/store/${product.slug}` } } : {}),
           url: `${base}/products/${product.slug}`,
         }}
       />
-      <PageHero title={product.name} image={product.image} icon="Package" crumbs={[{ label: 'Products', to: '/products' }, ...(product.category ? [{ label: product.category, to: `/products?category=${encodeURIComponent(product.category)}` }] : []), { label: product.name }]} />
+      <PageHero title={product.name} image={product.image} icon="Package" crumbs={[{ label: 'Store', to: '/store' }, ...(product.category ? [{ label: product.category, to: `/store?category=${encodeURIComponent(product.category)}` }] : []), { label: product.name }]} />
 
       <section className="py-16 md:py-20">
         <div className="container-x grid gap-12 lg:grid-cols-2">
@@ -72,7 +79,33 @@ export default function ProductDetail() {
             {(product.brand || product.partNumber) && (
               <p className="mt-2 text-muted">{product.brand && <>Brand: <strong className="text-navy">{product.brand}</strong></>}{product.brand && product.partNumber && ' · '}{product.partNumber && <>Part no: <strong className="text-navy">{product.partNumber}</strong></>}</p>
             )}
-            <p className="mt-4 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-700"><Package className="size-4" /> {product.availability || 'Enquire for availability'}</p>
+            <div className="mt-5 rounded-xl border border-line bg-surface p-5">
+              {showPrice ? (
+                <p className="flex flex-wrap items-baseline gap-x-3">
+                  <span className="font-display text-4xl font-extrabold text-navy">{formatPrice(product.price, currency)}</span>
+                  {product.oldPrice > product.price && <span className="text-lg text-muted line-through">{formatPrice(product.oldPrice, currency)}</span>}
+                  {product.unit && <span className="text-muted">/ {product.unit}</span>}
+                </p>
+              ) : (
+                <p className="font-display text-3xl font-extrabold uppercase text-navy">Price on request</p>
+              )}
+              <p className={cn('mt-3 inline-flex rounded-full px-3 py-1 text-sm font-semibold ring-1 ring-inset', stock ? stock.className : 'bg-white text-slate-600 ring-slate-200')}>
+                {stock ? stock.label : product.availability || 'Enquire for availability'}
+              </p>
+              <div className="mt-5 flex flex-wrap items-center gap-3">
+                <div className="flex items-center rounded-lg border border-line bg-white" role="group" aria-label="Quantity">
+                  <button type="button" onClick={() => setQty((n) => Math.max(1, n - 1))} className="grid size-12 place-items-center text-navy hover:text-brand disabled:opacity-40" disabled={qty <= 1} aria-label="Decrease quantity"><Minus className="size-4" /></button>
+                  <input type="number" min="1" max="999" inputMode="numeric" value={qty} onChange={(e) => setQty(Math.min(999, Math.max(1, Number(e.target.value) || 1)))} className="h-12 w-14 border-x border-line text-center font-semibold text-navy outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none" aria-label="Quantity" />
+                  <button type="button" onClick={() => setQty((n) => Math.min(999, n + 1))} className="grid size-12 place-items-center text-navy hover:text-brand" aria-label="Increase quantity"><Plus className="size-4" /></button>
+                </div>
+                {wa && !unavailable ? (
+                  <a href={wa} target="_blank" rel="noopener noreferrer" className="btn flex-1 bg-[#25D366] text-white hover:bg-[#1ebe5b] sm:flex-none"><MessageCircle className="size-5" /> Order on WhatsApp</a>
+                ) : (
+                  <Link to={quoteLink} className="btn btn-red flex-1 sm:flex-none">{unavailable ? 'Ask for availability' : 'Order / Request Quote'} <ArrowRight className="size-4" /></Link>
+                )}
+              </div>
+              {wa && <p className="mt-3 text-sm text-muted">Your order details open in WhatsApp — our team confirms price, stock and delivery.</p>}
+            </div>
             <p className="mt-6 text-lg leading-relaxed text-muted">{product.description}</p>
 
             {product.features?.length > 0 && (
@@ -91,9 +124,8 @@ export default function ProductDetail() {
                 </ul>
               </>
             )}
-            <div className="mt-9 flex flex-wrap gap-3">
-              <Link to={quoteLink} className="btn btn-red">Request a Quote <ArrowRight className="size-4" /></Link>
-              {wa && <a href={wa} target="_blank" rel="noopener noreferrer" className="btn btn-outline"><MessageCircle className="size-4" /> WhatsApp Enquiry</a>}
+            <div className="mt-8">
+              <Link to={quoteLink} className="btn btn-outline"><FileText className="size-4" /> Request a formal quotation</Link>
             </div>
           </Reveal>
         </div>

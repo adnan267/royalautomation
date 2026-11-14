@@ -3,6 +3,8 @@ import { ArrowRight } from 'lucide-react';
 import SmartImage from '../ui/SmartImage';
 import { Icon } from '@/lib/icons';
 import { cn } from '@/lib/utils';
+import { useSite } from '@/context/SiteContext';
+import { STOCK, formatPrice, hasPrice } from '@/lib/store';
 
 export function ServiceCard({ service, useCardTitle = false, className }) {
   const title = (useCardTitle && service.cardTitle) || service.title;
@@ -43,8 +45,12 @@ export function IndustryCard({ industry }) {
 }
 
 export function ProductCard({ product }) {
+  const { settings } = useSite();
+  const currency = settings.website?.currency || 'OMR';
+  const showPrice = settings.website?.showPrices !== false && hasPrice(product);
+  const stock = STOCK[product.stockStatus];
   return (
-    <Link to={`/products/${product.slug}`} className="group card flex h-full flex-col overflow-hidden transition duration-300 hover:-translate-y-1 hover:shadow-lift">
+    <Link to={`/store/${product.slug}`} className="group card flex h-full flex-col overflow-hidden transition duration-300 hover:-translate-y-1 hover:shadow-lift">
       <div className="relative">
         <SmartImage src={product.image} alt={product.imageAlt || product.name} icon="Package" className="aspect-[4/3]" imgClassName="transition-transform duration-700 group-hover:scale-105" />
         {product.category && (
@@ -57,9 +63,22 @@ export function ProductCard({ product }) {
           <p className="mt-1 text-sm text-muted">{[product.brand, product.partNumber].filter(Boolean).join(' · ')}</p>
         )}
         <p className="mt-2 flex-1 text-[15px] leading-relaxed text-muted">{product.excerpt}</p>
-        <div className="mt-4 flex items-center justify-between">
-          <span className="text-sm font-semibold text-emerald-700">{product.availability || 'Enquire for availability'}</span>
-          <span className="link-arrow">Details <ArrowRight className="size-4" aria-hidden /></span>
+        <div className="mt-4 border-t border-line pt-4">
+          {showPrice ? (
+            <p className="flex flex-wrap items-baseline gap-x-2">
+              <span className="font-display text-2xl font-extrabold text-navy">{formatPrice(product.price, currency)}</span>
+              {product.oldPrice > product.price && <span className="text-sm text-muted line-through">{formatPrice(product.oldPrice, currency)}</span>}
+              {product.unit && <span className="text-sm text-muted">/ {product.unit}</span>}
+            </p>
+          ) : (
+            <p className="font-display text-lg font-bold uppercase text-navy">Price on request</p>
+          )}
+          <div className="mt-2 flex items-center justify-between gap-2">
+            <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset', stock ? stock.className : 'bg-slate-50 text-slate-600 ring-slate-200')}>
+              {stock ? stock.label : product.availability || 'Enquire for availability'}
+            </span>
+            <span className="link-arrow">View <ArrowRight className="size-4" aria-hidden /></span>
+          </div>
         </div>
       </div>
     </Link>

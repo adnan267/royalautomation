@@ -15,6 +15,8 @@ const settingsSchema = new mongoose.Schema(
     home: { type: mongoose.Schema.Types.Mixed, default: {} },
     website: { type: mongoose.Schema.Types.Mixed, default: {} },
     seo: { type: mongoose.Schema.Types.Mixed, default: {} },
+    // One-time setup steps already applied to this database (see seed/ensureSeed.js).
+    seeds: { type: [String], default: [] },
   },
   { timestamps: true, minimize: false },
 );

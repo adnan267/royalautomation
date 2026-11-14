@@ -155,6 +155,16 @@ export const defaultSettings = {
     },
     // Animated statistics are only shown when real figures are entered in the admin panel.
     stats: [],
+    brandsSection: {
+      show: true,
+      heading: 'Brands We *Support*',
+      subheading: 'Multi-brand repair, programming and maintenance for leading automation and drive manufacturers.',
+    },
+    gallerySection: {
+      show: true,
+      heading: 'Our *Gallery*',
+      subheading: 'Photos and videos from our workshop, site visits and completed jobs.',
+    },
   },
   website: {
     showWhatsAppButton: true,
@@ -163,6 +173,11 @@ export const defaultSettings = {
       'Thank you — your request has been received. Our engineering team will review the details and contact you shortly.',
     contactSuccessMessage: 'Thank you for contacting us. A member of our team will get back to you shortly.',
     footerNote: '',
+    // Store: prices are shown in this currency; customers order through WhatsApp.
+    currency: 'OMR',
+    showPrices: true,
+    whatsappOrderMessage:
+      'Hello The Royal Automation, I would like to order:\n{product}\nQuantity: {qty}\n{price}\n{link}',
   },
   seo: {
     siteUrl: '',
@@ -191,9 +206,13 @@ export const defaultSettings = {
           'Automation, electrical and maintenance support for manufacturing, oil & gas, energy, water and wastewater, food & beverage and marine facilities.',
       },
       products: {
-        title: 'Products & Spare Parts',
+        title: 'Store — Products & Spare Parts',
         description:
-          'Industrial automation products and spare parts: PLC modules, HMIs, VFDs, servo drives, power supplies, sensors and switchgear. Enquire for availability.',
+          'Shop industrial automation products and spare parts in Oman: PLC modules, HMIs, VFDs, servo drives, power supplies, sensors and switchgear. Order on WhatsApp.',
+      },
+      gallery: {
+        title: 'Gallery — Photos & Videos',
+        description: 'Photos and videos of industrial automation, repair and maintenance work by The Royal Automation in Oman.',
       },
       projects: {
         title: 'Projects & Our Work',
@@ -722,4 +741,13 @@ export const products = [
   },
 ];
 
-export default { defaultSettings, services, industries, products, productCategories, IMAGES };
+/* ------------------------------------------------------------------ */
+/* Brands (slider). Names only — upload the official logos in Admin →   */
+/* Brands, and remove any brand you do not work with.                  */
+/* ------------------------------------------------------------------ */
+export const brands = [
+  'Siemens', 'ABB', 'Schneider Electric', 'Allen-Bradley', 'Mitsubishi Electric', 'Omron',
+  'Delta', 'Danfoss', 'Yaskawa', 'Fuji Electric', 'LS Electric', 'Eaton',
+].map((name, i) => ({ name, slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'), logo: '', website: '', order: i + 1, published: true }));
+
+export default { defaultSettings, services, industries, products, productCategories, brands, IMAGES };

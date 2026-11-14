@@ -9,6 +9,8 @@ import IndustriesGrid from '@/components/home/IndustriesGrid';
 import Expertise from '@/components/home/Expertise';
 import WhyChoose from '@/components/home/WhyChoose';
 import Stats from '@/components/home/Stats';
+import BrandsMarquee from '@/components/home/BrandsMarquee';
+import GalleryPreview from '@/components/home/GalleryPreview';
 import ProcessSteps from '@/components/sections/ProcessSteps';
 import CtaBanner from '@/components/sections/CtaBanner';
 
@@ -57,6 +59,8 @@ export default function Home() {
       <ProcessSteps />
       <Stats />
       <WhyChoose />
+      <GalleryPreview />
+      <BrandsMarquee />
       <CtaBanner />
     </>
   );

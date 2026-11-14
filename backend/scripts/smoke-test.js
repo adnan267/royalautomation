@@ -55,6 +55,8 @@ async function run() {
 
   r = await call('GET', '/api/quotes');
   check('admin route without auth -> 401', r.status === 401);
+  r = await call('POST', '/api/uploads/video-token', { body: {} });
+  check('video token requires admin', r.status === 401);
   r = await call('POST', '/api/auth/login', { body: { email: process.env.ADMIN_EMAIL, password: 'wrong-password' } });
   check('bad login -> 401', r.status === 401);
   r = await call('POST', '/api/auth/login', { body: { email: process.env.ADMIN_EMAIL, password: process.env.ADMIN_PASSWORD } });
@@ -78,6 +80,47 @@ async function run() {
   check('validation error -> 422 with field', r.status === 422 && r.data.errors?.title);
   r = await call('DELETE', `/api/services/${sid}`);
   check('delete service', r.status === 200);
+
+  // Store: prices & stock
+  let p = (await call('GET', '/api/products/ac-drives-vfd')).data;
+  const { _id: pid, createdAt: _c, updatedAt: _u, __v: _v, ...pbody } = p;
+  r = await call('PUT', `/api/products/${pid}`, { body: { ...pbody, price: 125.5, oldPrice: 140, unit: 'piece', stockStatus: 'in_stock' } });
+  check('product price + stock saved', r.status === 200 && r.data.price === 125.5 && r.data.stockStatus === 'in_stock', JSON.stringify(r.data.errors || ''));
+  r = await call('PUT', `/api/products/${pid}`, { body: { ...pbody, price: null, stockStatus: 'bogus' } });
+  check('invalid stock status rejected', r.status === 422);
+  await call('PUT', `/api/products/${pid}`, { body: { ...pbody, price: null, oldPrice: null, stockStatus: '' } });
+
+  // Brands
+  r = await call('GET', '/api/brands', { auth: false });
+  check('brands seeded', r.status === 200 && r.data.items.length >= 10);
+  r = await call('POST', '/api/brands', { body: { name: 'Test Brand', website: 'https://example.com' } });
+  check('create brand', r.status === 201 && r.data.slug === 'test-brand');
+  await call('DELETE', `/api/brands/${r.data._id}`);
+
+  // Gallery
+  r = await call('POST', '/api/gallery', { body: { type: 'video', title: 'No link' } });
+  check('video without link rejected', r.status === 422);
+  r = await call('POST', '/api/gallery', { body: { type: 'video', title: 'Panel walkthrough', videoUrl: 'https://youtu.be/dQw4w9WgXcQ', album: 'Site Work' } });
+  check('add YouTube video', r.status === 201 && r.data.type === 'video');
+  const vid = r.data._id;
+  r = await call('POST', '/api/gallery/bulk', { body: { items: [{ type: 'image', image: '/uploads/media/a.webp', album: 'Workshop' }, { type: 'image', image: '/uploads/media/b.webp', album: 'Workshop' }] } });
+  check('bulk add photos', r.status === 201 && r.data.items.length === 2 && r.data.items[0].slug !== r.data.items[1].slug);
+  const pics = r.data.items.map((i) => i._id);
+  r = await call('GET', '/api/gallery?type=image', { auth: false });
+  check('filter gallery by type', r.data.items.every((i) => i.type === 'image') && r.data.items.length >= 2);
+  r = await call('POST', '/api/gallery', { body: { type: 'image', image: 'javascript:alert(1)' } });
+  check('unsafe image URL rejected', r.status === 422);
+  for (const id of [vid, ...pics]) await call('DELETE', `/api/gallery/${id}`);
+
+  // Direct video upload token (Vercel Blob)
+  r = await call('GET', '/api/uploads/video-config');
+  check('video upload config', r.status === 200 && typeof r.data.enabled === 'boolean');
+  if (r.data.enabled) {
+    r = await call('POST', '/api/uploads/video-token', { body: { type: 'blob.generate-client-token', payload: { pathname: 'gallery/clip.mp4', clientPayload: null, multipart: false } } });
+    check('video upload token issued', r.status === 200 && typeof r.data.clientToken === 'string', JSON.stringify(r.data).slice(0, 200));
+    r = await call('POST', '/api/uploads/video-token', { body: { type: 'blob.generate-client-token', payload: { pathname: '../etc/x.mp4', clientPayload: null, multipart: false } } });
+    check('video upload path restricted', r.status === 400);
+  }
 
   // Settings
   r = await call('PUT', '/api/settings', { body: { contact: { email: 'not-an-email' } } });

@@ -17,14 +17,17 @@ royal-automation/
 
 ## What's included
 
-**Public website (12 pages, plus 10 service pages)**
-Home · About Us · Services · 10 individual service pages · Industries · Products & Spare Parts · Product details · Projects / Our Work · Project details · Contact Us · Request a Quote · Privacy Policy · Terms & Conditions · 404.
+**Public website**
+Home · About Us · Services · 10 individual service pages · Industries · **Store** (products & spare parts) · Product details · **Gallery** (photos & videos) · Projects / Our Work · Project details · Contact Us · Request a Quote · Privacy Policy · Terms & Conditions · 404.
 
 - Homepage follows the supplied design: top info bar, sticky header with dropdowns, hero, service highlights bar, 6 core services, 6 industries, engineering-expertise split, 4-step process, "Why Choose Us", CTA banner and footer with red accent line.
 - Brand system: Primary Blue `#0865A9`, Dark Navy `#062653`, Brand Red `#B5202B`, Light `#F4F7FB`, Dark Text `#172B45`. Barlow Condensed and Barlow fonts are bundled locally, not loaded from Google.
 - The original logo is used unaltered. Only its white margins were trimmed; it was not recoloured or distorted. In the footer it sits on a white card so the colours stay true.
 - Fully responsive, tested at 320, 360, 390, 414, 768 and 1024 px on every public and admin page: no sideways scrolling, tap targets of at least 24 px, 16 px form text (no iPhone zoom-in), a hamburger menu with accordions, and card layouts for admin lists on phones. Subtle animations respect "reduced motion".
 - Forms validate on the client and the server, show clear error messages and focus the first invalid field. They also have a spam honeypot and rate limiting.
+- **Store:** catalogue with OMR prices (3 decimals), old/discount price, stock status, categories, search, sorting and an "in stock" filter. Each product has a quantity selector and an **Order on WhatsApp** button that opens a pre-filled order message (product, part number, quantity, price, link). Products without a price show "Price on request". Old `/products` links redirect to `/store`.
+- **Gallery:** photos and videos with Photos/Videos tabs, albums and a full-screen lightbox (keyboard, swipe, prev/next). Videos can be YouTube/Vimeo links or uploaded MP4/WebM/MOV files (via Vercel Blob). The latest items also appear on the homepage.
+- **Brands slider:** an auto-scrolling, infinite brand strip on the homepage and store page. It pauses on hover and stays still when the visitor has "reduced motion" on. It is seeded with common automation brands (names only); upload the official logos in the admin.
 - **No invented facts.** Phone, email, WhatsApp, address, statistics, testimonials and certifications are empty until you enter them in the admin. Empty contact channels are hidden, and visitors are directed to the contact form. Animated statistics appear only after you enter real figures.
 
 **Admin dashboard** (`/admin`)
@@ -32,6 +35,9 @@ Home · About Us · Services · 10 individual service pages · Industries · Pro
 - Dashboard: counts of new and total leads, content totals, latest requests, and setup reminders.
 - **Quote requests**: list with status tabs and search, a detail drawer, attachment download, status workflow (`new → in review → quoted → in progress → completed → closed`), internal notes, and one-click Email / Call / WhatsApp to the customer.
 - **Contact inquiries**: same workflow (`new → read → replied → archived`).
+- **Store Products**: prices, old price, unit, stock status, gallery images, specifications.
+- **Gallery**: bulk photo upload into albums, YouTube/Vimeo links, direct video upload with progress and an automatic thumbnail, featured/hidden, captions.
+- **Brands**: name, logo, website link, order, show/hide.
 - **Services, Industries, Products, Projects**: full create/edit/delete, publish/hide, ordering, "show on homepage", images, SEO fields, related services and product specifications.
 - **Media library**: drag-and-drop upload (works from a phone too). Images are resized in the browser and on the server to a maximum of 2400px and converted to WebP. Alt text editing, reuse anywhere.
 - **Settings & SEO**: company and About-page content, contact details, Google Map, social links, every homepage section, per-page SEO titles and descriptions, Open Graph image, top bar and WhatsApp toggles, form success messages.
@@ -50,6 +56,7 @@ The repository is ready for **Vercel**. The website and API deploy together as o
 2. Push this folder to a GitHub repository.
 3. Import the repo in Vercel and add `MONGODB_URI`, `JWT_SECRET`, `ADMIN_EMAIL` and `ADMIN_PASSWORD`.
 4. Deploy, then open `/admin`. Default content and your admin account are created automatically on first run.
+5. Optional, for uploading video files: in Vercel go to **Storage → Create → Blob** and connect it to the project (YouTube links work without this).
 
 ## Local development
 
